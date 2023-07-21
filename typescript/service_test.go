@@ -22,6 +22,7 @@ type Group struct {
 }
 
 type User struct {
+	Reports        map[UserID]bool
 	UserID         UserID   `json:"userID"`
 	PrimaryGroup   Group    `json:"primaryGroup"`
 	SecondaryGroup *Group   `json:"secondaryGroup,omitempty"`

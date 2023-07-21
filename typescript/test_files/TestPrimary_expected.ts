@@ -4,6 +4,7 @@ export interface GroupResponse {
 }
 
 export interface SystemUser {
+	Reports: Map<foobar, boolean>
 	userID: foobar
 	primaryGroup: group
 	secondaryGroup?: group | null

@@ -1,6 +1,7 @@
 package typescript
 
 import (
+	"fmt"
 	"io"
 	"reflect"
 	"sort"
@@ -97,6 +98,7 @@ func (s *Service) Generate(writer io.Writer) error {
 					continue
 				}
 
+				// Handle Standard Types
 				if x, exists := mapping[getTypeIdentifier(actualType)]; exists {
 					inter.Fields = append(inter.Fields, tsField{
 						Name:     fieldName,
@@ -106,6 +108,23 @@ func (s *Service) Generate(writer io.Writer) error {
 						Optional: tag.Omitempty,
 					})
 					continue
+				}
+
+				// Maps Handling
+				if actualType.Kind() == reflect.Map {
+					key := mapping[getTypeIdentifier(actualType.Key())]
+					value := mapping[getTypeIdentifier(actualType.Elem())]
+					if key != "" && value != "" {
+						inter.Fields = append(inter.Fields, tsField{
+							Name:     fieldName,
+							Type:     fmt.Sprintf("Map<%s, %s>", key, value),
+							Array:    isSlice,
+							Nullable: isPointer || isSlice,
+							Optional: tag.Omitempty,
+						})
+
+						continue
+					}
 				}
 			}
 
