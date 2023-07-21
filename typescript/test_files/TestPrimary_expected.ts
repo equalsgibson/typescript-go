@@ -1,3 +1,8 @@
+export interface GroupResponse {
+	UpdatedAt: string
+	Data: group[] | null
+}
+
 export interface SystemUser {
 	userID: foobar
 	primaryGroup: group

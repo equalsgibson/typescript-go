@@ -30,13 +30,19 @@ type User struct {
 	unexported     any
 }
 
+type BaseResponse[T any] struct {
+	UpdatedAt time.Time
+	Data      []T
+}
+
 func TestPrimary(t *testing.T) {
 	_ = User{}.unexported
 
 	service := typescript.New(map[string]any{
-		"foobar":     UserID(0),
-		"group":      Group{},
-		"SystemUser": User{},
+		"GroupResponse": BaseResponse[Group]{},
+		"foobar":        UserID(0),
+		"group":         Group{},
+		"SystemUser":    User{},
 	})
 
 	testThePackage(t, service)
