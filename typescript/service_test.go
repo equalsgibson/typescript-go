@@ -11,40 +11,45 @@ import (
 	"github.com/aaronellington/typescript-go/typescript"
 )
 
-type UserID uint64
-
-type Group struct {
-	Name      string `json:"groupName"`
-	UpdatedAt time.Time
-	DeletedAt *time.Time
-	Data      any
-	MoreData  interface{}
-}
-
-type User struct {
-	Reports        map[UserID]bool
-	UserID         UserID   `json:"userID"`
-	PrimaryGroup   Group    `json:"primaryGroup"`
-	SecondaryGroup *Group   `json:"secondaryGroup,omitempty"`
-	Tags           []string `json:"tags"`
-	Private        any      `json:"-"`
-	unexported     any
-}
-
-type BaseResponse[T any] struct {
-	UpdatedAt time.Time
-	Data      []T
-}
-
 func TestPrimary(t *testing.T) {
+	type UserID uint64
+
+	type Group struct {
+		Name      string `json:"groupName"`
+		UpdatedAt time.Time
+		DeletedAt *time.Time
+		Data      any
+		MoreData  interface{}
+	}
+
+	type User struct {
+		Reports        map[UserID]bool
+		UserID         UserID   `json:"userID"`
+		PrimaryGroup   Group    `json:"primaryGroup"`
+		SecondaryGroup *Group   `json:"secondaryGroup,omitempty"`
+		Tags           []string `json:"tags"`
+		Private        any      `json:"-"`
+		unexported     any
+	}
+
+	type BaseResponse[T any] struct {
+		UpdatedAt time.Time
+		Data      []T
+	}
+
 	_ = User{}.unexported
 
-	service := typescript.New(map[string]any{
-		"GroupResponse": BaseResponse[Group]{},
-		"foobar":        UserID(0),
-		"group":         Group{},
-		"SystemUser":    User{},
-	})
+	type Thing BaseResponse[User]
+
+	service := typescript.New(
+		map[string]any{
+			"GroupResponse": BaseResponse[Group]{},
+			"foobar":        UserID(0),
+			"group":         Group{},
+			"SystemUser":    User{},
+			"Thing":         Thing{},
+		},
+	)
 
 	testThePackage(t, service)
 }
