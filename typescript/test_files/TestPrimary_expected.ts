@@ -11,6 +11,11 @@ export interface SystemUser {
 	tags: string[] | null
 }
 
+export interface Thing {
+	UpdatedAt: string
+	Data: SystemUser[] | null
+}
+
 export type foobar = number
 
 export interface group {
