@@ -24,7 +24,7 @@ type Group struct {
 type User struct {
 	UserID         UserID   `json:"userID"`
 	PrimaryGroup   Group    `json:"primaryGroup"`
-	SecondaryGroup *Group   `json:"secondaryGroup"`
+	SecondaryGroup *Group   `json:"secondaryGroup,omitempty"`
 	Tags           []string `json:"tags"`
 	Private        any      `json:"-"`
 	unexported     any

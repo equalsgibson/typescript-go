@@ -1,7 +1,7 @@
 export interface SystemUser {
 	userID: foobar
 	primaryGroup: group
-	secondaryGroup: group | null
+	secondaryGroup?: group | null
 	tags: string[] | null
 }
 

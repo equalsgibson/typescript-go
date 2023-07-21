@@ -107,8 +107,6 @@ func (s *Service) Generate(writer io.Writer) error {
 					})
 					continue
 				}
-
-				panic(actualType.String())
 			}
 
 			tsItems = append(tsItems, inter)
