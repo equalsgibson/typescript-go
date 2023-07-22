@@ -27,27 +27,16 @@ func (ts tsInterface) GenerateTypeScript() string {
 type tsField struct {
 	Name     string
 	Type     string
-	Array    bool
-	Nullable bool
 	Optional bool
 }
 
 func (ts tsField) GenerateTypeScript() string {
-	t := ts.Type
-	if ts.Array {
-		t += "[]"
-	}
-
-	if ts.Nullable {
-		t += " | null"
-	}
-
 	o := ""
 	if ts.Optional {
 		o = "?"
 	}
 
-	return fmt.Sprintf("\t%s%s: %s", ts.Name, o, t)
+	return fmt.Sprintf("\t%s%s: %s", ts.Name, o, ts.Type)
 }
 
 type tsType struct {

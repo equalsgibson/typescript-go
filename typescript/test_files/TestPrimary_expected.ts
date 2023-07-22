@@ -4,9 +4,10 @@ export interface GroupResponse {
 }
 
 export interface SystemUser {
-	Reports: Map<foobar, boolean>
+	Reports: Map<foobar, boolean> | null
 	userID: foobar
 	primaryGroup: group
+	X: unknown
 	secondaryGroup?: group | null
 	tags: string[] | null
 }

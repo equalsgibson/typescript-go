@@ -22,10 +22,13 @@ func TestPrimary(t *testing.T) {
 		MoreData  interface{}
 	}
 
+	type TypeNotGivenToTheRegistry string
+
 	type User struct {
 		Reports        map[UserID]bool
-		UserID         UserID   `json:"userID"`
-		PrimaryGroup   Group    `json:"primaryGroup"`
+		UserID         UserID `json:"userID"`
+		PrimaryGroup   Group  `json:"primaryGroup"`
+		X              TypeNotGivenToTheRegistry
 		SecondaryGroup *Group   `json:"secondaryGroup,omitempty"`
 		Tags           []string `json:"tags"`
 		Private        any      `json:"-"`
