@@ -24,6 +24,8 @@ func TestPrimary(t *testing.T) {
 
 	type TypeNotGivenToTheRegistry string
 
+	type GroupMap map[string]Group
+
 	type User struct {
 		Reports        map[UserID]bool
 		UserID         UserID `json:"userID"`
@@ -37,6 +39,7 @@ func TestPrimary(t *testing.T) {
 
 	type BaseResponse[T any] struct {
 		UpdatedAt time.Time
+		Map       GroupMap
 		Data      []T
 	}
 
@@ -51,6 +54,8 @@ func TestPrimary(t *testing.T) {
 			"group":         Group{},
 			"SystemUser":    User{},
 			"Thing":         Thing{},
+			"GroupMapA":     GroupMap{},
+			"GroupMapB":     map[string]Group{},
 		},
 	)
 

@@ -1,5 +1,10 @@
+export type GroupMapA = Map<string, group> | null
+
+export type GroupMapB = Map<string, group> | null
+
 export interface GroupResponse {
 	UpdatedAt: string
+	Map: Map<string, group> | null
 	Data: group[] | null
 }
 
@@ -14,6 +19,7 @@ export interface SystemUser {
 
 export interface Thing {
 	UpdatedAt: string
+	Map: Map<string, group> | null
 	Data: SystemUser[] | null
 }
 

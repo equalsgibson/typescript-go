@@ -58,7 +58,9 @@ func (s *Service) Generate(writer io.Writer) error {
 		rv := reflect.ValueOf(entry)
 
 		kind := rv.Kind()
-		if x, exists := s.mapping[kind.String()]; exists {
+
+		// Look for standard "kinds" in the mapping and just return those as types
+		if x, exists := s.mapping[kind.String()]; exists && x != key {
 			tsItems = append(tsItems, tsType{
 				Name: key,
 				Type: x,
@@ -66,44 +68,49 @@ func (s *Service) Generate(writer io.Writer) error {
 			continue
 		}
 
-		if kind == reflect.Struct {
-			inter := tsInterface{
-				Name:   key,
-				Fields: []tsField{},
-			}
-
-			for i := 0; i < rv.NumField(); i++ {
-				valueField := rv.Field(i)
-				typeField := rv.Type().Field(i)
-				actualType := valueField.Type()
-
-				if !typeField.IsExported() {
-					continue
-				}
-
-				tag := parseJSONFieldTag(typeField.Tag.Get("json"))
-				fieldName := typeField.Name
-				if tag.NameOverride != "" {
-					fieldName = tag.NameOverride
-				}
-
-				if tag.Ignored {
-					continue
-				}
-
-				tsType := s.convertType(actualType)
-
-				inter.Fields = append(inter.Fields, tsField{
-					Name:     fieldName,
-					Type:     tsType,
-					Optional: tag.Omitempty,
-				})
-
-			}
-
-			tsItems = append(tsItems, inter)
+		if kind == reflect.Map {
+			tsItems = append(tsItems, tsType{
+				Name: key,
+				Type: s.convertType(rv.Type()),
+			})
+			continue
 		}
 
+		inter := tsInterface{
+			Name:   key,
+			Fields: []tsField{},
+		}
+
+		for i := 0; i < rv.NumField(); i++ {
+			valueField := rv.Field(i)
+			typeField := rv.Type().Field(i)
+			actualType := valueField.Type()
+
+			if !typeField.IsExported() {
+				continue
+			}
+
+			tag := parseJSONFieldTag(typeField.Tag.Get("json"))
+			fieldName := typeField.Name
+			if tag.NameOverride != "" {
+				fieldName = tag.NameOverride
+			}
+
+			if tag.Ignored {
+				continue
+			}
+
+			tsType := s.convertType(actualType)
+
+			inter.Fields = append(inter.Fields, tsField{
+				Name:     fieldName,
+				Type:     tsType,
+				Optional: tag.Omitempty,
+			})
+
+		}
+
+		tsItems = append(tsItems, inter)
 	}
 
 	for i, tsItem := range tsItems {
