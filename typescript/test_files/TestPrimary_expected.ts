@@ -3,27 +3,27 @@ export type GroupMapA = Map<string, group> | null
 export type GroupMapB = Map<string, group> | null
 
 export interface GroupResponse {
-	UpdatedAt: string
-	Map: Map<string, group> | null
-	Data: group[] | null
+	updated_at: string
+	group_map: Map<string, group> | null
+	data: group
 }
 
 export interface SystemUser {
-	Reports: Map<foobar, boolean> | null
-	userID: foobar
+	Reports: Map<TestUserID, boolean> | null
+	userID: TestUserID
 	primaryGroup: group
-	X: unknown
+	UnknownType: unknown
 	secondaryGroup?: group | null
-	tags: string[] | null
+	user_tags: string[] | null
 }
 
-export interface Thing {
-	UpdatedAt: string
-	Map: Map<string, group> | null
-	Data: SystemUser[] | null
-}
+export type TestUserID = number
 
-export type foobar = number
+export interface UserResponse {
+	updated_at: string
+	group_map: Map<string, group> | null
+	data: SystemUser[] | null
+}
 
 export interface group {
 	groupName: string

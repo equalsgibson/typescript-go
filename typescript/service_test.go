@@ -30,30 +30,30 @@ func TestPrimary(t *testing.T) {
 		Reports        map[UserID]bool
 		UserID         UserID `json:"userID"`
 		PrimaryGroup   Group  `json:"primaryGroup"`
-		X              TypeNotGivenToTheRegistry
+		UnknownType    TypeNotGivenToTheRegistry
 		SecondaryGroup *Group   `json:"secondaryGroup,omitempty"`
-		Tags           []string `json:"tags"`
+		Tags           []string `json:"user_tags"`
 		Private        any      `json:"-"`
 		unexported     any
 	}
 
 	type BaseResponse[T any] struct {
-		UpdatedAt time.Time
-		Map       GroupMap
-		Data      []T
+		UpdatedAt time.Time `json:"updated_at"`
+		GroupMap  GroupMap  `json:"group_map"`
+		Data      T         `json:"data"`
 	}
 
 	_ = User{}.unexported
 
-	type Thing BaseResponse[User]
+	type UsersResponse BaseResponse[[]User]
 
 	service := typescript.New(
 		map[string]any{
+			"TestUserID":    UserID(0),
 			"GroupResponse": BaseResponse[Group]{},
-			"foobar":        UserID(0),
+			"UserResponse":  UsersResponse{},
 			"group":         Group{},
 			"SystemUser":    User{},
-			"Thing":         Thing{},
 			"GroupMapA":     GroupMap{},
 			"GroupMapB":     map[string]Group{},
 		},
