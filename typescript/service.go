@@ -7,7 +7,9 @@ import (
 	"sort"
 )
 
-func New(registry map[string]any) *Service {
+func New(
+	registry map[string]any,
+) *Service {
 	return &Service{
 		registry: registry,
 		mapping: map[string]string{
@@ -46,7 +48,7 @@ func (s *Service) Generate(writer io.Writer) error {
 		keys = append(keys, key)
 
 		// This maps the give structs to what they should be converted to when encountered later
-		s.mapping[getTypeIdentifier(reflect.ValueOf(entry).Type())] = key
+		s.mapping[createStandardTypeIdentifier(reflect.ValueOf(entry).Type())] = key
 	}
 
 	sort.Strings(keys)
@@ -71,7 +73,7 @@ func (s *Service) Generate(writer io.Writer) error {
 		if kind == reflect.Map {
 			tsItems = append(tsItems, tsType{
 				Name: key,
-				Type: s.convertType(rv.Type()),
+				Type: s.convertGoTypeToTypeScriptType(rv.Type()),
 			})
 			continue
 		}
@@ -100,7 +102,7 @@ func (s *Service) Generate(writer io.Writer) error {
 				continue
 			}
 
-			tsType := s.convertType(actualType)
+			tsType := s.convertGoTypeToTypeScriptType(actualType)
 
 			inter.Fields = append(inter.Fields, tsField{
 				Name:     fieldName,
@@ -125,7 +127,7 @@ func (s *Service) Generate(writer io.Writer) error {
 	return nil
 }
 
-func getTypeIdentifier(item reflect.Type) string {
+func createStandardTypeIdentifier(item reflect.Type) string {
 	pkg := item.PkgPath()
 	name := item.Name()
 	if name != "" {
@@ -140,7 +142,7 @@ func getTypeIdentifier(item reflect.Type) string {
 	return item.String()
 }
 
-func (s *Service) convertType(item reflect.Type) string {
+func (s *Service) convertGoTypeToTypeScriptType(item reflect.Type) string {
 	isSlice := item.Kind() == reflect.Slice
 	isPointer := item.Kind() == reflect.Pointer
 	isMap := item.Kind() == reflect.Map
@@ -153,12 +155,12 @@ func (s *Service) convertType(item reflect.Type) string {
 	if isMap {
 		return fmt.Sprintf(
 			"Map<%s, %s> | null",
-			s.convertType(item.Key()),
-			s.convertType(item.Elem()),
+			s.convertGoTypeToTypeScriptType(item.Key()),
+			s.convertGoTypeToTypeScriptType(item.Elem()),
 		)
 	}
 
-	typeFromMapping, found := s.mapping[getTypeIdentifier(item)]
+	typeFromMapping, found := s.mapping[createStandardTypeIdentifier(item)]
 	if !found {
 		return "unknown"
 	}
