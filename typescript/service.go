@@ -36,9 +36,20 @@ func New(
 	}
 }
 
+func NewWithRoutes(
+	registry map[string]any,
+	routes map[string]Route,
+) *Service {
+	s := New(registry)
+	s.routes = routes
+
+	return s
+}
+
 type Service struct {
 	registry map[string]any
 	mapping  map[string]string
+	routes   map[string]Route
 }
 
 func (s *Service) Generate(writer io.Writer) error {
@@ -115,6 +126,48 @@ func (s *Service) Generate(writer io.Writer) error {
 		tsItems = append(tsItems, inter)
 	}
 
+	// Add route endpoints
+	routeNames := []string{}
+	for routeName := range s.routes {
+		routeNames = append(routeNames, routeName)
+	}
+	sort.Strings(routeNames)
+
+	for _, routeName := range routeNames {
+		route := s.routes[routeName]
+		responseBodyType := s.convertGoTypeToTypeScriptType(reflect.ValueOf(route.ResponseBody).Type())
+		requestBodyType := ""
+		if route.RequestBody != nil {
+			requestBodyType = s.convertGoTypeToTypeScriptType(reflect.ValueOf(route.RequestBody).Type())
+		}
+
+		params := []tsRouteParam{}
+
+		paramKeys := []string{}
+		for key := range route.Params {
+			paramKeys = append(paramKeys, key)
+		}
+		sort.Strings(paramKeys)
+
+		for _, key := range paramKeys {
+			value := route.Params[key]
+			params = append(params, tsRouteParam{
+				Name: key,
+				Type: s.convertGoTypeToTypeScriptType(reflect.ValueOf(value).Type()),
+			})
+		}
+
+		tsItems = append(tsItems, tsRoute{
+			Name:            routeName,
+			Path:            route.Path,
+			Method:          route.Method,
+			Params:          params,
+			RequestBodyType: requestBodyType,
+			ResponseType:    responseBodyType,
+		})
+	}
+
+	// Write all the items to the Writer
 	for i, tsItem := range tsItems {
 		s := tsItem.GenerateTypeScript()
 		_, _ = writer.Write([]byte(s))

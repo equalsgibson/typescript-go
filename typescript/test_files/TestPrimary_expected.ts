@@ -32,3 +32,24 @@ export interface group {
 	Data: any
 	MoreData: any
 }
+
+export const userCreate = (payload: SystemUser) => {
+	return fetch("/api/user/create", {
+		method: "POST",
+		body: JSON.stringify(payload),
+	}).then<UserResponse>((response => response.json()))
+}
+
+export const userGet = (userID: TestUserID) => {
+	const params = {
+		userID: userID,
+	}
+
+	const queryString = Object.keys(params).map((key) => {
+		return encodeURIComponent(key) + "=" + encodeURIComponent(params[key])
+	}).join("&")
+
+	return fetch(`/api/user?${queryString}`, {
+		method: "GET",
+	}).then<UserResponse>((response => response.json()))
+}
