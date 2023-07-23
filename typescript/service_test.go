@@ -3,6 +3,7 @@ package typescript_test
 import (
 	"bytes"
 	"io"
+	"net/http"
 	"os"
 	"reflect"
 	"testing"
@@ -47,7 +48,7 @@ func TestPrimary(t *testing.T) {
 
 	type UsersResponse BaseResponse[[]User]
 
-	service := typescript.New(
+	service := typescript.NewWithRoutes(
 		map[string]any{
 			"TestUserID":    UserID(0),
 			"GroupResponse": BaseResponse[Group]{},
@@ -56,6 +57,22 @@ func TestPrimary(t *testing.T) {
 			"SystemUser":    User{},
 			"GroupMapA":     GroupMap{},
 			"GroupMapB":     map[string]Group{},
+		},
+		map[string]typescript.Route{
+			"userGet": {
+				ResponseBody: UsersResponse{},
+				Method:       http.MethodGet,
+				Path:         "/api/user",
+				Params: map[string]any{
+					"userID": UserID(0),
+				},
+			},
+			"userCreate": {
+				ResponseBody: UsersResponse{},
+				RequestBody:  User{},
+				Method:       http.MethodPost,
+				Path:         "/api/user/create",
+			},
 		},
 	)
 
