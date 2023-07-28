@@ -50,6 +50,7 @@ func (ts tsRoute) GenerateTypeScript() string {
 		for _, param := range ts.Params {
 			output += fmt.Sprintf("\t\t%s: %s,\n", param.Name, param.Name)
 		}
+
 		output += "\t}\n\n"
 
 		output += "\tconst queryString = Object.keys(params).map((key) => {\n"

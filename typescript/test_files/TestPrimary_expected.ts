@@ -1,15 +1,15 @@
-export type GroupMapA = Map<string, group> | null
+export type GroupMapA = { [key: string]: group } | null
 
-export type GroupMapB = Map<string, group> | null
+export type GroupMapB = { [key: string]: group } | null
 
 export interface GroupResponse {
 	updated_at: string
-	group_map: Map<string, group> | null
+	group_map: { [key: string]: group } | null
 	data: group
 }
 
 export interface SystemUser {
-	Reports: Map<TestUserID, boolean> | null
+	Reports: { [key: TestUserID]: boolean } | null
 	userID: TestUserID
 	primaryGroup: group
 	UnknownType: unknown
@@ -21,7 +21,7 @@ export type TestUserID = number
 
 export interface UserResponse {
 	updated_at: string
-	group_map: Map<string, group> | null
+	group_map: { [key: string]: group } | null
 	data: SystemUser[] | null
 }
 

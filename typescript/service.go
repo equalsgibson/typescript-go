@@ -78,6 +78,7 @@ func (s *Service) Generate(writer io.Writer) error {
 				Name: key,
 				Type: x,
 			})
+
 			continue
 		}
 
@@ -86,6 +87,7 @@ func (s *Service) Generate(writer io.Writer) error {
 				Name: key,
 				Type: s.convertGoTypeToTypeScriptType(rv.Type()),
 			})
+
 			continue
 		}
 
@@ -105,6 +107,7 @@ func (s *Service) Generate(writer io.Writer) error {
 
 			tag := parseJSONFieldTag(typeField.Tag.Get("json"))
 			fieldName := typeField.Name
+
 			if tag.NameOverride != "" {
 				fieldName = tag.NameOverride
 			}
@@ -120,7 +123,6 @@ func (s *Service) Generate(writer io.Writer) error {
 				Type:     tsType,
 				Optional: tag.Omitempty,
 			})
-
 		}
 
 		tsItems = append(tsItems, inter)
@@ -131,12 +133,14 @@ func (s *Service) Generate(writer io.Writer) error {
 	for routeName := range s.routes {
 		routeNames = append(routeNames, routeName)
 	}
+
 	sort.Strings(routeNames)
 
 	for _, routeName := range routeNames {
 		route := s.routes[routeName]
 		responseBodyType := s.convertGoTypeToTypeScriptType(reflect.ValueOf(route.ResponseBody).Type())
 		requestBodyType := ""
+
 		if route.RequestBody != nil {
 			requestBodyType = s.convertGoTypeToTypeScriptType(reflect.ValueOf(route.RequestBody).Type())
 		}
@@ -147,6 +151,7 @@ func (s *Service) Generate(writer io.Writer) error {
 		for key := range route.Params {
 			paramKeys = append(paramKeys, key)
 		}
+
 		sort.Strings(paramKeys)
 
 		for _, key := range paramKeys {
@@ -172,6 +177,7 @@ func (s *Service) Generate(writer io.Writer) error {
 		s := tsItem.GenerateTypeScript()
 		_, _ = writer.Write([]byte(s))
 		_, _ = writer.Write([]byte("\n"))
+
 		if i != len(tsItems)-1 {
 			_, _ = writer.Write([]byte("\n"))
 		}
@@ -183,9 +189,11 @@ func (s *Service) Generate(writer io.Writer) error {
 func createStandardTypeIdentifier(item reflect.Type) string {
 	pkg := item.PkgPath()
 	name := item.Name()
+
 	if name != "" {
 		if pkg != "" {
 			x := pkg + "." + name
+
 			return x
 		}
 
@@ -207,7 +215,7 @@ func (s *Service) convertGoTypeToTypeScriptType(item reflect.Type) string {
 
 	if isMap {
 		return fmt.Sprintf(
-			"Map<%s, %s> | null",
+			"{ [key: %s]: %s } | null",
 			s.convertGoTypeToTypeScriptType(item.Key()),
 			s.convertGoTypeToTypeScriptType(item.Elem()),
 		)

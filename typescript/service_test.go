@@ -81,6 +81,7 @@ func TestPrimary(t *testing.T) {
 
 func testThePackage(t *testing.T, service *typescript.Service) {
 	actualFileName := "test_files/" + t.Name() + "_actual.ts"
+
 	actualFile, err := os.Create(actualFileName)
 	if err != nil {
 		t.Fatal(err)
