@@ -91,9 +91,32 @@ func (s *Service) Generate(writer io.Writer) error {
 			continue
 		}
 
+		fields := []tsField{}
+
+		loopOverStructFields(rv, func(fieldDefinition reflect.StructField) {
+			tag := parseJSONFieldTag(fieldDefinition.Tag.Get("json"))
+			fieldName := fieldDefinition.Name
+
+			if tag.NameOverride != "" {
+				fieldName = tag.NameOverride
+			}
+
+			if tag.Ignored {
+				return
+			}
+
+			tsType := s.convertGoTypeToTypeScriptType(fieldDefinition.Type)
+
+			fields = append(fields, tsField{
+				Name:     fieldName,
+				Type:     tsType,
+				Optional: tag.Omitempty,
+			})
+		})
+
 		inter := tsInterface{
 			Name:   key,
-			Fields: s.checkStruct(rv),
+			Fields: fields,
 		}
 
 		tsItems = append(tsItems, inter)
@@ -157,47 +180,6 @@ func (s *Service) Generate(writer io.Writer) error {
 	return nil
 }
 
-func (s *Service) checkStruct(rv reflect.Value) []tsField {
-	fields := []tsField{}
-
-	for i := 0; i < rv.NumField(); i++ {
-		valueField := rv.Field(i)
-		typeField := rv.Type().Field(i)
-		actualType := valueField.Type()
-
-		if !typeField.IsExported() {
-			continue
-		}
-
-		if typeField.Type.Kind() == reflect.Struct && typeField.Anonymous {
-			fields = append(fields, s.checkStruct(valueField)...)
-
-			continue
-		}
-
-		tag := parseJSONFieldTag(typeField.Tag.Get("json"))
-		fieldName := typeField.Name
-
-		if tag.NameOverride != "" {
-			fieldName = tag.NameOverride
-		}
-
-		if tag.Ignored {
-			continue
-		}
-
-		tsType := s.convertGoTypeToTypeScriptType(actualType)
-
-		fields = append(fields, tsField{
-			Name:     fieldName,
-			Type:     tsType,
-			Optional: tag.Omitempty,
-		})
-	}
-
-	return fields
-}
-
 func createStandardTypeIdentifier(item reflect.Type) string {
 	pkg := item.PkgPath()
 	name := item.Name()
@@ -247,4 +229,27 @@ func (s *Service) convertGoTypeToTypeScriptType(item reflect.Type) string {
 	}
 
 	return typeFromMapping
+}
+
+func loopOverStructFields(value reflect.Value, fieldHandler func(fieldDefinition reflect.StructField)) {
+	if value.Kind() == reflect.Pointer {
+		value = value.Elem()
+	}
+
+	for i := 0; i < value.NumField(); i++ {
+		fieldValue := value.Field(i)
+		fieldDefinition := value.Type().Field(i)
+
+		if !fieldDefinition.IsExported() {
+			continue
+		}
+
+		if fieldDefinition.Type.Kind() == reflect.Struct && fieldDefinition.Anonymous {
+			loopOverStructFields(fieldValue, fieldHandler)
+
+			continue
+		}
+
+		fieldHandler(fieldDefinition)
+	}
 }
