@@ -173,8 +173,6 @@ func (s *Service) checkStruct(rv reflect.Value) []tsField {
 			fields = append(fields, s.checkStruct(valueField)...)
 
 			continue
-
-			// embedded
 		}
 
 		tag := parseJSONFieldTag(typeField.Tag.Get("json"))
