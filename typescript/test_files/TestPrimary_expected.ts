@@ -1,3 +1,8 @@
+export interface ExtendedType {
+	ID: number
+	Name: string
+}
+
 export type GroupMapA = { [key: string]: group } | null
 
 export type GroupMapB = { [key: string]: group } | null

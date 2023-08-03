@@ -93,36 +93,7 @@ func (s *Service) Generate(writer io.Writer) error {
 
 		inter := tsInterface{
 			Name:   key,
-			Fields: []tsField{},
-		}
-
-		for i := 0; i < rv.NumField(); i++ {
-			valueField := rv.Field(i)
-			typeField := rv.Type().Field(i)
-			actualType := valueField.Type()
-
-			if !typeField.IsExported() {
-				continue
-			}
-
-			tag := parseJSONFieldTag(typeField.Tag.Get("json"))
-			fieldName := typeField.Name
-
-			if tag.NameOverride != "" {
-				fieldName = tag.NameOverride
-			}
-
-			if tag.Ignored {
-				continue
-			}
-
-			tsType := s.convertGoTypeToTypeScriptType(actualType)
-
-			inter.Fields = append(inter.Fields, tsField{
-				Name:     fieldName,
-				Type:     tsType,
-				Optional: tag.Omitempty,
-			})
+			Fields: s.checkStruct(rv),
 		}
 
 		tsItems = append(tsItems, inter)
@@ -184,6 +155,49 @@ func (s *Service) Generate(writer io.Writer) error {
 	}
 
 	return nil
+}
+
+func (s *Service) checkStruct(rv reflect.Value) []tsField {
+	fields := []tsField{}
+
+	for i := 0; i < rv.NumField(); i++ {
+		valueField := rv.Field(i)
+		typeField := rv.Type().Field(i)
+		actualType := valueField.Type()
+
+		if !typeField.IsExported() {
+			continue
+		}
+
+		if typeField.Type.Kind() == reflect.Struct && typeField.Anonymous {
+			fields = append(fields, s.checkStruct(valueField)...)
+
+			continue
+
+			// embedded
+		}
+
+		tag := parseJSONFieldTag(typeField.Tag.Get("json"))
+		fieldName := typeField.Name
+
+		if tag.NameOverride != "" {
+			fieldName = tag.NameOverride
+		}
+
+		if tag.Ignored {
+			continue
+		}
+
+		tsType := s.convertGoTypeToTypeScriptType(actualType)
+
+		fields = append(fields, tsField{
+			Name:     fieldName,
+			Type:     tsType,
+			Optional: tag.Omitempty,
+		})
+	}
+
+	return fields
 }
 
 func createStandardTypeIdentifier(item reflect.Type) string {

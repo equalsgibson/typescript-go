@@ -23,6 +23,15 @@ func TestPrimary(t *testing.T) {
 		MoreData  interface{}
 	}
 
+	type BaseType struct {
+		ID uint64
+	}
+
+	type ExtendedType struct {
+		BaseType
+		Name string
+	}
+
 	type TypeNotGivenToTheRegistry string
 
 	type GroupMap map[string]Group
@@ -57,6 +66,7 @@ func TestPrimary(t *testing.T) {
 			"SystemUser":    User{},
 			"GroupMapA":     GroupMap{},
 			"GroupMapB":     map[string]Group{},
+			"ExtendedType":  ExtendedType{},
 		},
 		map[string]typescript.Route{
 			"userGet": {
