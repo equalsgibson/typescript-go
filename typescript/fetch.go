@@ -43,33 +43,33 @@ func (ts tsRoute) GenerateTypeScript() string {
 		)
 	}
 
-	output := fmt.Sprintf("export const %s = (%s) => {\n", ts.Name, strings.Join(arguments, ", "))
+	output := fmt.Sprintf("\texport const %s = (%s) => {\n", ts.Name, strings.Join(arguments, ", "))
 
 	if len(ts.Params) > 0 {
-		output += "\tconst params = {\n"
+		output += "\t\tconst params = {\n"
 		for _, param := range ts.Params {
-			output += fmt.Sprintf("\t\t%s: %s,\n", param.Name, param.Name)
+			output += fmt.Sprintf("\t\t\t%s: %s,\n", param.Name, param.Name)
 		}
 
-		output += "\t}\n\n"
+		output += "\t\t}\n\n"
 
-		output += "\tconst queryString = Object.keys(params).map((key) => {\n"
-		output += "\t\treturn encodeURIComponent(key) + \"=\" + encodeURIComponent(params[key])\n"
-		output += "\t}).join(\"&\")\n\n"
+		output += "\t\tconst queryString = Object.keys(params).map((key) => {\n"
+		output += "\t\t\treturn encodeURIComponent(key) + \"=\" + encodeURIComponent(params[key])\n"
+		output += "\t\t}).join(\"&\")\n\n"
 
-		output += fmt.Sprintf("\treturn fetch(`%s?${queryString}`, {\n", ts.Path)
+		output += fmt.Sprintf("\t\treturn fetch(`%s?${queryString}`, {\n", ts.Path)
 	} else {
-		output += fmt.Sprintf("\treturn fetch(\"%s\", {\n", ts.Path)
+		output += fmt.Sprintf("\t\treturn fetch(\"%s\", {\n", ts.Path)
 	}
 
-	output += fmt.Sprintf("\t\tmethod: \"%s\",\n", ts.Method)
+	output += fmt.Sprintf("\t\t\tmethod: \"%s\",\n", ts.Method)
 
 	if ts.RequestBodyType != "" {
-		output += "\t\tbody: JSON.stringify(payload),\n"
+		output += "\t\t\tbody: JSON.stringify(payload),\n"
 	}
 
-	output += fmt.Sprintf("\t}).then<%s>((response => response.json()))\n", ts.ResponseType)
-	output += "}"
+	output += fmt.Sprintf("\t\t}).then<%s>((response => response.json()))\n", ts.ResponseType)
+	output += "\t}"
 
 	return output
 }

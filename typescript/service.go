@@ -166,6 +166,8 @@ func (s *Service) Generate(writer io.Writer) error {
 		})
 	}
 
+	_, _ = writer.Write([]byte("export namespace GoGenerated {\n"))
+
 	// Write all the items to the Writer
 	for i, tsItem := range tsItems {
 		s := tsItem.GenerateTypeScript()
@@ -174,6 +176,8 @@ func (s *Service) Generate(writer io.Writer) error {
 
 		if i != len(tsItems)-1 {
 			_, _ = writer.Write([]byte("\n"))
+		} else {
+			_, _ = writer.Write([]byte("}\n"))
 		}
 	}
 
