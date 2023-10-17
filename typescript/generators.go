@@ -21,7 +21,7 @@ func (ts tsInterface) GenerateTypeScript() string {
 		fields = append(fields, field.GenerateTypeScript())
 	}
 
-	return fmt.Sprintf("\texport interface %s {\n%s\n\t}", ts.Name, strings.Join(fields, "\n"))
+	return fmt.Sprintf("\texport type %s = {\n%s\n\t}", ts.Name, strings.Join(fields, "\n"))
 }
 
 type tsField struct {

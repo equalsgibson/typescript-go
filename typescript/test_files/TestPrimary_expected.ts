@@ -1,5 +1,5 @@
 export namespace GoGenerated {
-	export interface ExtendedType {
+	export type ExtendedType = {
 		ID: number
 		Name: string
 	}
@@ -8,13 +8,13 @@ export namespace GoGenerated {
 
 	export type GroupMapB = { [key: string]: group } | null
 
-	export interface GroupResponse {
+	export type GroupResponse = {
 		updated_at: string
 		group_map: { [key: string]: group } | null
 		data: group
 	}
 
-	export interface SystemUser {
+	export type SystemUser = {
 		Reports: { [key: TestUserID]: boolean } | null
 		userID: TestUserID
 		primaryGroup: group
@@ -25,13 +25,13 @@ export namespace GoGenerated {
 
 	export type TestUserID = number
 
-	export interface UserResponse {
+	export type UserResponse = {
 		updated_at: string
 		group_map: { [key: string]: group } | null
 		data: SystemUser[] | null
 	}
 
-	export interface group {
+	export type group = {
 		groupName: string
 		UpdatedAt: string
 		DeletedAt: string | null
