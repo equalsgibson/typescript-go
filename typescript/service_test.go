@@ -12,6 +12,12 @@ import (
 	"github.com/aaronellington/typescript-go/typescript"
 )
 
+type CustomTime time.Time
+
+func (c CustomTime) String() string {
+	return "foobar"
+}
+
 func TestPrimary(t *testing.T) {
 	type UserID uint64
 
@@ -19,6 +25,7 @@ func TestPrimary(t *testing.T) {
 		Name      string `json:"groupName"`
 		UpdatedAt time.Time
 		DeletedAt *time.Time
+		CreateAt  CustomTime
 		Data      any
 		MoreData  interface{}
 	}

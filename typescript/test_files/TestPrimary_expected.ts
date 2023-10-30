@@ -35,6 +35,7 @@ export namespace GoGenerated {
 		groupName: string
 		UpdatedAt: string
 		DeletedAt: string | null
+		CreateAt: string
 		Data: any
 		MoreData: any
 	}

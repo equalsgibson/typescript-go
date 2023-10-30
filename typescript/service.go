@@ -205,6 +205,8 @@ func (s *Service) convertGoTypeToTypeScriptType(item reflect.Type) string {
 	isSlice := item.Kind() == reflect.Slice
 	isPointer := item.Kind() == reflect.Pointer
 	isMap := item.Kind() == reflect.Map
+	stringerTyp := reflect.TypeOf((*fmt.Stringer)(nil)).Elem()
+	isStringer := item.Implements(stringerTyp)
 
 	// Read through the pointer/slice/map
 	if isPointer || isSlice {
@@ -221,6 +223,10 @@ func (s *Service) convertGoTypeToTypeScriptType(item reflect.Type) string {
 
 	typeFromMapping, found := s.mapping[createStandardTypeIdentifier(item)]
 	if !found {
+		if isStringer {
+			return "string"
+		}
+
 		return "unknown"
 	}
 
