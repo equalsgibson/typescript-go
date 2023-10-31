@@ -28,6 +28,7 @@ linters:
     # Don't care for
     - depguard
     - dupl
+    - errname
     - exhaustive
     - exhaustruct
     - funlen
@@ -36,6 +37,7 @@ linters:
     - lll
     - nestif
     - paralleltest
+    - perfsprint
     - tagliatelle
     - testpackage
     - thelper
