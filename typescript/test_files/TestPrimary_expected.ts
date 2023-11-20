@@ -44,7 +44,7 @@ export namespace GoGenerated {
 		return fetch("/api/user/create", {
 			method: "POST",
 			body: JSON.stringify(payload),
-		}).then<UserResponse>((response => response.json()))
+		}).then<UserResponse>((response) => response.json())
 	}
 
 	export const userGet = (userID: TestUserID) => {
@@ -58,6 +58,6 @@ export namespace GoGenerated {
 
 		return fetch(`/api/user?${queryString}`, {
 			method: "GET",
-		}).then<UserResponse>((response => response.json()))
+		}).then<UserResponse>((response) => response.json())
 	}
 }

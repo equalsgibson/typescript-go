@@ -68,7 +68,7 @@ func (ts tsRoute) GenerateTypeScript() string {
 		output += "\t\t\tbody: JSON.stringify(payload),\n"
 	}
 
-	output += fmt.Sprintf("\t\t}).then<%s>((response => response.json()))\n", ts.ResponseType)
+	output += fmt.Sprintf("\t\t}).then<%s>((response) => response.json())\n", ts.ResponseType)
 	output += "\t}"
 
 	return output
