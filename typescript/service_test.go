@@ -25,6 +25,7 @@ func TestPrimary(t *testing.T) {
 		Name      string `json:"groupName"`
 		UpdatedAt time.Time
 		DeletedAt *time.Time
+		Timeout   time.Duration
 		CreateAt  CustomTime
 		Data      any
 		MoreData  interface{}
