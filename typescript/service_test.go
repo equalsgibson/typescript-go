@@ -15,7 +15,11 @@ import (
 type CustomTime time.Time
 
 func (c CustomTime) String() string {
-	return "foobar"
+	return time.Time(c).String()
+}
+
+func (c CustomTime) MarshalJSON() ([]byte, error) {
+	return time.Time(c).MarshalJSON()
 }
 
 func TestPrimary(t *testing.T) {
@@ -65,7 +69,7 @@ func TestPrimary(t *testing.T) {
 
 	type UsersResponse BaseResponse[[]User]
 
-	service := typescript.NewWithRoutes(
+	service := typescript.NewWithDataAndRoutes(
 		map[string]any{
 			"TestUserID":    UserID(0),
 			"GroupResponse": BaseResponse[Group]{},
@@ -75,6 +79,13 @@ func TestPrimary(t *testing.T) {
 			"GroupMapA":     GroupMap{},
 			"GroupMapB":     map[string]Group{},
 			"ExtendedType":  ExtendedType{},
+		},
+		map[string]any{
+			"foobar": Group{
+				Name:      "hello there",
+				CreateAt:  CustomTime(time.Date(1, 1, 1, 1, 1, 1, 1, time.UTC)),
+				UpdatedAt: time.Date(1, 1, 1, 1, 1, 1, 1, time.UTC),
+			},
 		},
 		map[string]typescript.Route{
 			"userGet": {

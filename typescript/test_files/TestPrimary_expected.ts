@@ -61,4 +61,14 @@ export namespace GoGenerated {
 			method: "GET",
 		}).then<UserResponse>((response) => response.json())
 	}
+
+	export const foobar: group = {
+		"groupName": "hello there",
+		"UpdatedAt": "0001-01-01T01:01:01.000000001Z",
+		"DeletedAt": null,
+		"Timeout": 0,
+		"CreateAt": "0001-01-01T01:01:01.000000001Z",
+		"Data": null,
+		"MoreData": null
+	}
 }

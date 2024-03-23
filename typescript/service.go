@@ -47,9 +47,32 @@ func NewWithRoutes(
 	return s
 }
 
+func NewWithData(
+	registry map[string]any,
+	data map[string]any,
+) *Service {
+	s := New(registry)
+	s.data = data
+
+	return s
+}
+
+func NewWithDataAndRoutes(
+	registry map[string]any,
+	data map[string]any,
+	routes map[string]Route,
+) *Service {
+	s := New(registry)
+	s.data = data
+	s.routes = routes
+
+	return s
+}
+
 type Service struct {
 	registry map[string]any
 	mapping  map[string]string
+	data     map[string]any
 	routes   map[string]Route
 }
 
@@ -164,6 +187,23 @@ func (s *Service) Generate(writer io.Writer) error {
 			Params:          params,
 			RequestBodyType: requestBodyType,
 			ResponseType:    responseBodyType,
+		})
+	}
+
+	// Add data
+	dataVarNames := []string{}
+	for dataVarName := range s.data {
+		dataVarNames = append(dataVarNames, dataVarName)
+	}
+
+	sort.Strings(dataVarNames)
+
+	for _, dataVarName := range dataVarNames {
+		data := s.data[dataVarName]
+		tsItems = append(tsItems, tsData{
+			Name: dataVarName,
+			Type: s.convertGoTypeToTypeScriptType(reflect.ValueOf(data).Type()),
+			Data: data,
 		})
 	}
 
