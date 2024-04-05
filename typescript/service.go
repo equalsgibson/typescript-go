@@ -9,15 +9,15 @@ import (
 
 type ConfigFunc func(s *Service)
 
-func WithRegistry(registry map[string]any) ConfigFunc {
+func WithCustomNamespace(namespace string) ConfigFunc {
 	return func(s *Service) {
-		s.registry = registry
+		s.namespace = namespace
 	}
 }
 
-func WithData(data map[string]any) ConfigFunc {
+func WithRegistry(registry map[string]any) ConfigFunc {
 	return func(s *Service) {
-		s.data = data
+		s.registry = registry
 	}
 }
 
@@ -27,11 +27,17 @@ func WithRoutes(routes map[string]Route) ConfigFunc {
 	}
 }
 
+func WithData(data map[string]any) ConfigFunc {
+	return func(s *Service) {
+		s.data = data
+	}
+}
+
 func New(
-	namespace string,
 	configFuncs ...ConfigFunc,
 ) *Service {
 	s := &Service{
+		namespace: "GoGenerated",
 		mapping: map[string]string{
 			"string":        "string",
 			"time.Time":     "string",
@@ -64,10 +70,11 @@ func New(
 }
 
 type Service struct {
-	registry map[string]any
-	mapping  map[string]string
-	data     map[string]any
-	routes   map[string]Route
+	namespace string
+	registry  map[string]any
+	mapping   map[string]string
+	data      map[string]any
+	routes    map[string]Route
 }
 
 func (s *Service) Generate(writer io.Writer) error {
@@ -201,7 +208,7 @@ func (s *Service) Generate(writer io.Writer) error {
 		})
 	}
 
-	_, _ = writer.Write([]byte("export namespace GoGenerated {\n"))
+	_, _ = writer.Write([]byte("export namespace " + s.namespace + " {\n"))
 
 	// Write all the items to the Writer
 	for i, tsItem := range tsItems {

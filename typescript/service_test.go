@@ -70,7 +70,6 @@ func TestPrimary(t *testing.T) {
 	type UsersResponse BaseResponse[[]User]
 
 	service := typescript.New(
-		"GoGenerated",
 		typescript.WithRegistry(map[string]any{
 			"TestUserID":    UserID(0),
 			"GroupResponse": BaseResponse[Group]{},
