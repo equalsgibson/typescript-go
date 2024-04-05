@@ -69,8 +69,9 @@ func TestPrimary(t *testing.T) {
 
 	type UsersResponse BaseResponse[[]User]
 
-	service := typescript.NewWithDataAndRoutes(
-		map[string]any{
+	service := typescript.New(
+		"GoGenerated",
+		typescript.WithRegistry(map[string]any{
 			"TestUserID":    UserID(0),
 			"GroupResponse": BaseResponse[Group]{},
 			"UserResponse":  UsersResponse{},
@@ -79,15 +80,15 @@ func TestPrimary(t *testing.T) {
 			"GroupMapA":     GroupMap{},
 			"GroupMapB":     map[string]Group{},
 			"ExtendedType":  ExtendedType{},
-		},
-		map[string]any{
+		}),
+		typescript.WithData(map[string]any{
 			"foobar": Group{
 				Name:      "hello there",
 				CreateAt:  CustomTime(time.Date(1, 1, 1, 1, 1, 1, 1, time.UTC)),
 				UpdatedAt: time.Date(1, 1, 1, 1, 1, 1, 1, time.UTC),
 			},
-		},
-		map[string]typescript.Route{
+		}),
+		typescript.WithRoutes(map[string]typescript.Route{
 			"userGet": {
 				ResponseBody: UsersResponse{},
 				Method:       http.MethodGet,
@@ -102,7 +103,7 @@ func TestPrimary(t *testing.T) {
 				Method:       http.MethodPost,
 				Path:         "/api/user/create",
 			},
-		},
+		}),
 	)
 
 	testThePackage(t, service)

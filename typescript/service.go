@@ -7,11 +7,31 @@ import (
 	"sort"
 )
 
+type ConfigFunc func(s *Service)
+
+func WithRegistry(registry map[string]any) ConfigFunc {
+	return func(s *Service) {
+		s.registry = registry
+	}
+}
+
+func WithData(data map[string]any) ConfigFunc {
+	return func(s *Service) {
+		s.data = data
+	}
+}
+
+func WithRoutes(routes map[string]Route) ConfigFunc {
+	return func(s *Service) {
+		s.routes = routes
+	}
+}
+
 func New(
-	registry map[string]any,
+	namespace string,
+	configFuncs ...ConfigFunc,
 ) *Service {
-	return &Service{
-		registry: registry,
+	s := &Service{
 		mapping: map[string]string{
 			"string":        "string",
 			"time.Time":     "string",
@@ -35,36 +55,10 @@ func New(
 			"complex128":    "number",
 		},
 	}
-}
 
-func NewWithRoutes(
-	registry map[string]any,
-	routes map[string]Route,
-) *Service {
-	s := New(registry)
-	s.routes = routes
-
-	return s
-}
-
-func NewWithData(
-	registry map[string]any,
-	data map[string]any,
-) *Service {
-	s := New(registry)
-	s.data = data
-
-	return s
-}
-
-func NewWithDataAndRoutes(
-	registry map[string]any,
-	data map[string]any,
-	routes map[string]Route,
-) *Service {
-	s := New(registry)
-	s.data = data
-	s.routes = routes
+	for _, configFunc := range configFuncs {
+		configFunc(s)
+	}
 
 	return s
 }
