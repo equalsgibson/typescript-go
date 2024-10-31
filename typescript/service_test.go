@@ -22,6 +22,26 @@ func (c CustomTime) MarshalJSON() ([]byte, error) {
 	return time.Time(c).MarshalJSON()
 }
 
+func TestSpecialCharacter(t *testing.T) {
+	type TestStruct struct {
+		Timestamp string `json:"@timestamp"`
+		UpdatedAt time.Time
+		DeletedAt *time.Time
+		Timeout   time.Duration
+		Data      any
+		MoreData  interface{}
+	}
+
+	service := typescript.New(
+		typescript.WithRegistry(map[string]any{
+			"TestStruct": TestStruct{},
+		}),
+	)
+
+	testThePackage(t, service)
+
+}
+
 func TestPrimary(t *testing.T) {
 	type UserID uint64
 

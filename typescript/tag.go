@@ -17,8 +17,9 @@ func parseJSONFieldTag(tagString string) jsonFieldTag {
 
 	parts := strings.Split(tagString, ",")
 	if len(parts) == 1 {
+
 		return jsonFieldTag{
-			NameOverride: parts[0],
+			NameOverride: overrideSpecialCharacters(parts[0]),
 		}
 	}
 
@@ -26,7 +27,7 @@ func parseJSONFieldTag(tagString string) jsonFieldTag {
 
 	for i, part := range parts {
 		if i == 0 {
-			tag.NameOverride = part
+			tag.NameOverride = overrideSpecialCharacters(part)
 
 			continue
 		}
@@ -37,4 +38,22 @@ func parseJSONFieldTag(tagString string) jsonFieldTag {
 	}
 
 	return tag
+}
+
+// NOTE: This is required for json field names that have a "special" character in them.
+// These need to be wrapped in " " and accessed via the [] notation.
+//
+// EX: Timestamp string `json:"@timestamp"` needs to be accessed via Object["@timestamp"]
+func overrideSpecialCharacters(tagName string) string {
+	runesToCheckFor := []rune{
+		64, // @
+		32, // ' '
+	}
+
+	for _, r := range runesToCheckFor {
+		if strings.ContainsRune(tagName, r) {
+			return "\"" + tagName + "\""
+		}
+	}
+	return tagName
 }
