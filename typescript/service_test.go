@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aaronellington/typescript-go/typescript"
+	"github.com/equalsgibson/typescript-go/typescript"
 )
 
 type CustomTime time.Time
